@@ -1,20 +1,22 @@
 <template>
   <d2-container>
-    <template slot="header">机构管理</template>
+    <template slot="header">{{this.$route.meta.title}}</template>
     <d2-crud
       ref="d2Crud"
-      add-mode
-      :add-button="addButton"
-      :form-template="this.$unifyCrud.formTemplate(this.$route.name)"
-      :form-options="formOptions"
       :columns="this.$unifyCrud.getColumns(this.$route.name)"
       :loading="loading"
       :data="data"
+      add-title="新增"
+      :add-template="this.$unifyCrud.addTemplate(this.$route.name)"
+      :add-rules="this.$unifyCrud.formRules(this.$route.name)"
+      :form-options="formOptions"
       :pagination="pagination"
       @pagination-current-change="paginationCurrentChange"
       @row-add="handleRowAdd"
       @dialog-cancel="handleDialogCancel"
-    />
+    >
+      <el-button slot="header" style="margin-bottom: 5px" @click="addRow">新增</el-button>
+    </d2-crud>
   </d2-container>
 </template>
 
@@ -28,6 +30,11 @@ export default {
         icon: 'el-icon-plus',
         size: 'small'
       },
+      options: {
+        stripe: true,
+        fit: false,
+        highlightCurrentRow: true
+      },
       formOptions: {
         labelWidth: '80px',
         labelPosition: 'left',
@@ -36,8 +43,7 @@ export default {
       pagination: {
         currentPage: 1,
         pageSize: 10,
-        total: 0,
-        layout: 'prev, pager, next, total'
+        total: 0
       }
     }
   },
@@ -45,6 +51,11 @@ export default {
     this.fetchData()
   },
   methods: {
+    addRow () {
+      this.$refs.d2Crud.showDialog({
+        mode: 'add'
+      })
+    },
     async handleRowAdd (row, done) {
       this.formOptions.saveLoading = true
       await this.$unifyCrud.add(this.$route.name, row)

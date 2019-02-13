@@ -24,8 +24,36 @@ export default {
         let result = await request(`/data/${path}`, { params: state })
         return result
       },
+      // 表单校验
+      formRules: path => {
+        let model = path.split('-').reduce((result, item) => result[item], Model)
+        let result = {}
+        for (let key in model) {
+          result[key] = []
+          let prop = model[key]
+          if (prop.isRequired) {
+            result[key].push({
+              required: true,
+              message: `请输入${prop.name}`
+            })
+          }
+          if (prop.type) {
+            result[key].push({
+              type: prop.type.name.toLowerCase(),
+              message: `${prop.name}格式有误`
+            })
+          }
+          if (prop.regEx) {
+            result[key].push({
+              pattern: prop.regEx,
+              message: `${prop.name}格式有误`
+            })
+          }
+        }
+        return result
+      },
       // 新增模板
-      formTemplate: path => {
+      addTemplate: path => {
         let model = path.split('-').reduce((result, item) => result[item], Model)
         let result = {}
         for (let key in model) {
