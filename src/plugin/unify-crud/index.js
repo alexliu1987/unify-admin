@@ -10,13 +10,20 @@ export default {
         let model = path.split('-').reduce((result, item) => result[item], Model)
         let columns = Object.entries(model)
           .filter(([, v]) => v.table)
-          .map(([k, v]) => ({
-            title: v.name,
-            key: k,
-            width: (v.table && v.table.width) || null,
-            align: (v.table && v.table.align) || 'center'
-          }))
-        columns.push({ title: '操作', width: 120, align: 'center' })
+          .map(([k, v]) => {
+            let res = {
+              title: v.name,
+              key: k,
+              width: (v.table && v.table.width) || null,
+              align: (v.table && v.table.align) || 'center'
+            }
+            if (v.type.name === 'Boolean') {
+              res.formatter = (row, column, cellValue, index) => {
+                return cellValue ? '启用' : '禁用'
+              }
+            }
+            return res
+          })
         return columns
       },
       // 获取列表数据
@@ -61,11 +68,23 @@ export default {
             title: model[key].name,
             value: model[key].default
           }
+          if (model[key].type.name === 'Boolean') {
+            result[key].component = { name: 'el-switch' }
+          }
         }
         return result
       },
       add: async (path, data) => {
         let result = await request.post(`/data/${path}`, data)
+        Message({
+          message: '保存成功',
+          type: 'success'
+        })
+        return result
+      },
+      update: async (path, data) => {
+        console.log('update data', data)
+        let result = await request.put(`/data/${path}/${data._id}`, data)
         Message({
           message: '保存成功',
           type: 'success'

@@ -9,10 +9,15 @@
       add-title="新增"
       :add-template="this.$unifyCrud.addTemplate(this.$route.name)"
       :add-rules="this.$unifyCrud.formRules(this.$route.name)"
+      @row-add="handleRowAdd"
+      :rowHandle="rowHandle"
+      edit-title="修改"
+      :edit-template="this.$unifyCrud.addTemplate(this.$route.name)"
+      :edit-rules="this.$unifyCrud.formRules(this.$route.name)"
+      @row-edit="handleRowEdit"
       :form-options="formOptions"
       :pagination="pagination"
       @pagination-current-change="paginationCurrentChange"
-      @row-add="handleRowAdd"
       @dialog-cancel="handleDialogCancel"
     >
       <el-button slot="header" style="margin-bottom: 5px" @click="addRow">新增</el-button>
@@ -26,9 +31,13 @@ export default {
     return {
       data: [],
       loading: false,
-      addButton: {
-        icon: 'el-icon-plus',
-        size: 'small'
+      rowHandle: {
+        columnHeader: '操作',
+        edit: {
+          icon: 'el-icon-edit',
+          text: '编辑',
+          size: 'small'
+        }
       },
       options: {
         stripe: true,
@@ -59,6 +68,12 @@ export default {
     async handleRowAdd (row, done) {
       this.formOptions.saveLoading = true
       await this.$unifyCrud.add(this.$route.name, row)
+      done()
+      this.formOptions.saveLoading = false
+    },
+    async handleRowEdit ({ row }, done) {
+      this.formOptions.saveLoading = true
+      await this.$unifyCrud.update(this.$route.name, row)
       done()
       this.formOptions.saveLoading = false
     },
