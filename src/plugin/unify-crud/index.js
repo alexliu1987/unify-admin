@@ -1,4 +1,4 @@
-import request from '@/plugin/axios'
+import { GetAll, Get, Add, Update } from '@/api/unify.crud'
 import { Message } from 'element-ui'
 import Model from '@/model'
 
@@ -28,7 +28,7 @@ export default {
       },
       // 获取列表数据
       getData: async (path, state) => {
-        let result = await request(`/data/${path}`, { params: state })
+        let result = await Get(path, state)
         return result
       },
       // 表单校验
@@ -60,7 +60,7 @@ export default {
         return result
       },
       // 新增模板
-      addTemplate: path => {
+      getTemplate: async path => {
         let model = path.split('-').reduce((result, item) => result[item], Model)
         let result = {}
         for (let key in model) {
@@ -68,14 +68,22 @@ export default {
             title: model[key].name,
             value: model[key].default
           }
-          if (model[key].type.name === 'Boolean') {
+          if (model[key].component) {
+            result[key].component = model[key].component
+          } else if (model[key].type.name === 'Boolean') {
             result[key].component = { name: 'el-switch' }
+          } else if (model[key].dataSource) {
+            let options = await GetAll(model[key].dataSource.model)
+            result[key].component = {
+              name: 'el-select',
+              options: options.list.map(l => ({ value: l[model[key].dataSource.value], label: l[model[key].dataSource.label] }))
+            }
           }
         }
         return result
       },
       add: async (path, data) => {
-        let result = await request.post(`/data/${path}`, data)
+        let result = await Add(path, data)
         Message({
           message: '保存成功',
           type: 'success'
@@ -83,8 +91,7 @@ export default {
         return result
       },
       update: async (path, data) => {
-        console.log('update data', data)
-        let result = await request.put(`/data/${path}/${data._id}`, data)
+        let result = await Update(path, data)
         Message({
           message: '保存成功',
           type: 'success'

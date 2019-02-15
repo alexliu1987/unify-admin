@@ -6,6 +6,11 @@ export default {
     default: '',
     isRequired: true,
     regEx: /^[a-zA-Z0-9]{1,20}$/,
+    dataSource: {
+      model: 'org-org',
+      value: 'code',
+      label: 'name'
+    },
     search: true,
     table: true
   },

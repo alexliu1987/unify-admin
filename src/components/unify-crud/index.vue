@@ -7,12 +7,12 @@
       :loading="loading"
       :data="data"
       add-title="新增"
-      :add-template="this.$unifyCrud.addTemplate(this.$route.name)"
+      :add-template="template"
       :add-rules="this.$unifyCrud.formRules(this.$route.name)"
       @row-add="handleRowAdd"
       :rowHandle="rowHandle"
       edit-title="修改"
-      :edit-template="this.$unifyCrud.addTemplate(this.$route.name)"
+      :edit-template="template"
       :edit-rules="this.$unifyCrud.formRules(this.$route.name)"
       @row-edit="handleRowEdit"
       :form-options="formOptions"
@@ -30,6 +30,7 @@ export default {
   data () {
     return {
       data: [],
+      template: {},
       loading: false,
       rowHandle: {
         columnHeader: '操作',
@@ -58,6 +59,7 @@ export default {
   },
   async mounted () {
     this.fetchData()
+    this.fetchTemplate()
   },
   methods: {
     addRow () {
@@ -90,6 +92,9 @@ export default {
       this.data = res.list
       this.pagination.total = res.pageInfo.recordCount
       this.loading = false
+    },
+    async fetchTemplate () {
+      this.template = await this.$unifyCrud.getTemplate(this.$route.name)
     },
     handleDialogCancel (done) {
       this.$message({

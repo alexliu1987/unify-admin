@@ -8,6 +8,7 @@ import i18n from './i18n'
 // 核心插件
 import d2Admin from '@/plugin/d2admin'
 import D2Crud from '@d2-projects/d2-crud'
+import VueRx from 'vue-rx'
 import UnifyCrud from '@/plugin/unify-crud'
 
 // 菜单和路由设置
@@ -19,6 +20,7 @@ import { frameInRoutes } from '@/router/routes'
 // 核心插件
 Vue.use(d2Admin)
 Vue.use(D2Crud)
+Vue.use(VueRx)
 Vue.use(UnifyCrud)
 
 new Vue({
