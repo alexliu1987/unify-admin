@@ -57,7 +57,7 @@ export default {
       }
     }
   },
-  async mounted () {
+  mounted () {
     this.fetchData()
     this.fetchTemplate()
   },
